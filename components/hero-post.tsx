@@ -3,6 +3,7 @@ import DateFormatter from './date-formatter'
 import CoverImage from './cover-image'
 import Link from 'next/link'
 import Author from '../types/author'
+import { BlobOptions } from 'buffer'
 
 type Props = {
   title: string
@@ -11,6 +12,7 @@ type Props = {
   excerpt: string
   author: Author
   slug: string
+  premium: boolean
 }
 
 const HeroPost = ({
@@ -20,6 +22,7 @@ const HeroPost = ({
   excerpt,
   author,
   slug,
+  premium
 }: Props) => {
   return (
     <section>
@@ -40,6 +43,7 @@ const HeroPost = ({
         <div>
           <p className="text-lg leading-relaxed mb-4">{excerpt}</p>
           <Avatar name={author.name} picture={author.picture} />
+          {premium? <div>Premium</div> : null}
         </div>
       </div>
     </section>

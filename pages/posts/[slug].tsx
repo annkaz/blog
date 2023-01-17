@@ -11,6 +11,7 @@ import Head from 'next/head'
 import { CMS_NAME } from '../../lib/constants'
 import markdownToHtml from '../../lib/markdownToHtml'
 import PostType from '../../types/post'
+import { useState } from 'react'
 
 type Props = {
   post: PostType
@@ -19,37 +20,41 @@ type Props = {
 }
 
 const Post = ({ post, morePosts, preview }: Props) => {
+  const [{username, password}, setUser] = useState({})
   const router = useRouter()
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />
   }
+  
+  let layout = (<Layout preview={preview}>
+    <Container>
+      <Header />
+      {router.isFallback ? (
+        <PostTitle>Loading…</PostTitle>
+      ) : (
+        <>
+          <article className="mb-32">
+            <Head>
+              <title>
+                {post.title} | Next.js Blog Example with {CMS_NAME}
+              </title>
+              <meta property="og:image" content={post.ogImage.url} />
+            </Head>
+            <PostHeader
+              title={post.title}
+              coverImage={post.coverImage}
+              date={post.date}
+              author={post.author}
+            />
+            <PostBody content={post.content} />
+          </article>
+        </>
+      )}
+    </Container>
+  </Layout>)
+  
   return (
-    <Layout preview={preview}>
-      <Container>
-        <Header />
-        {router.isFallback ? (
-          <PostTitle>Loading…</PostTitle>
-        ) : (
-          <>
-            <article className="mb-32">
-              <Head>
-                <title>
-                  {post.title} | Next.js Blog Example with {CMS_NAME}
-                </title>
-                <meta property="og:image" content={post.ogImage.url} />
-              </Head>
-              <PostHeader
-                title={post.title}
-                coverImage={post.coverImage}
-                date={post.date}
-                author={post.author}
-              />
-              <PostBody content={post.content} />
-            </article>
-          </>
-        )}
-      </Container>
-    </Layout>
+    {username ? layout : <SignIn />}
   )
 }
 
@@ -96,4 +101,27 @@ export async function getStaticPaths() {
     }),
     fallback: false,
   }
+}
+
+const SignIn = () => {
+  const [username, setUsername] = useState('')
+  const [password,setPassword] = useState('')
+  
+  return (
+    <div>
+      <form action="" method="get" class="form-example">
+        <div class="form-example">
+          <label for="name">Enter your username: </label>
+          <input onSubmit={setUsername(name)} type="text" name="name" id="name" required>
+        </div>
+        <div class="form-example">
+          <label for="email">Enter your password: </label>
+          <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-example">
+          <input type="submit" value="LogIn!"/>
+        </div>
+      </form>
+    </div>
+  )
 }
